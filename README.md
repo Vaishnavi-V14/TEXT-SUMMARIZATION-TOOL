@@ -30,10 +30,12 @@ Key Activities
 
 
 Technology Used
+
 •	Natural Language Processing (NLP): Libraries like NLTK, SpaCy, and Gensim for text preprocessing and tokenization.
-• Transformers Library: Hugging Face's Transformers for leveraging state-of-the-art pre-trained models for summarization.
+•	Transformers Library: Hugging Face's Transformers for leveraging state-of-the-art pre-trained models for summarization.
 •	Flask/Django: Frameworks for building APIs or web applications for the summarization tool.
 •	Evaluation Metrics: ROUGE, BLEU, and METEOR for evaluating summary quality.
+
 
 
 
