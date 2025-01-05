@@ -1,0 +1,106 @@
+# Install necessary libraries
+# Run this cell to install required libraries (only once)
+!pip install nltk sumy
+
+# Import required libraries
+import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.corpus import stopwords
+from collections import Counter
+import string
+
+# Download NLTK data
+nltk.download('punkt')
+nltk.download('stopwords')
+
+# NLTK-based summarization function
+def summarize_text_nltk(text, n=3):
+    """
+    Summarize the input text using basic NLP techniques with NLTK.
+
+    Parameters:
+        text (str): The input article or text.
+        n (int): The number of sentences in the summary.
+
+    Returns:
+        str: A concise summary of the text.
+    """
+    # Tokenize sentences
+    sentences = sent_tokenize(text)
+
+    # Tokenize words and remove stopwords
+    stop_words = set(stopwords.words('english'))
+    words = word_tokenize(text.lower())
+    words = [word for word in words if word not in stop_words and word not in string.punctuation]
+
+    # Calculate word frequencies
+    word_frequencies = Counter(words)
+
+    # Calculate sentence scores
+    sentence_scores = {}
+    for sentence in sentences:
+        for word in word_tokenize(sentence.lower()):
+            if word in word_frequencies:
+                if sentence not in sentence_scores:
+                    sentence_scores[sentence] = word_frequencies[word]
+                else:
+                    sentence_scores[sentence] += word_frequencies[word]
+
+    # Sort sentences by score
+    ranked_sentences = sorted(sentence_scores, key=sentence_scores.get, reverse=True)
+
+    # Select top n sentences
+    summary = ' '.join(ranked_sentences[:n])
+
+    return summary
+
+# Example input text
+input_text = """
+Artificial Intelligence is a branch of computer science that aims to create machines 
+as intelligent as humans. AI is a multidisciplinary field that involves machine learning, 
+natural language processing, robotics, and more. In recent years, AI has become 
+ubiquitous in various applications such as healthcare, finance, education, and entertainment. 
+While AI offers immense opportunities, it also raises ethical and societal concerns 
+that need to be addressed.
+"""
+
+# Generate summary with NLTK
+summary_nltk = summarize_text_nltk(input_text, n=2)
+
+print("Original Text:")
+print(input_text)
+print("\nSummary (NLTK):")
+print(summary_nltk)
+
+
+
+# Sumy-based summarization
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.lsa import LsaSummarizer
+
+def summarize_text_sumy(text, n=2):
+    """
+    Summarize the input text using Sumy's LSA (Latent Semantic Analysis) summarizer.
+
+    Parameters:
+        text (str): The input article or text.
+        n (int): The number of sentences in the summary.
+
+    Returns:
+        str: A concise summary of the text.
+    """
+    # Parse the text
+    parser = PlaintextParser.from_string(text, Tokenizer("english"))
+    summarizer = LsaSummarizer()
+
+    # Generate summary
+    summary = summarizer(parser.document, n)
+    return " ".join(str(sentence) for sentence in summary)
+
+# Generate summary with Sumy
+summary_sumy = summarize_text_sumy(input_text, n=2)
+
+print("\nSummary (Sumy):")
+print(summary_sumy)
+
